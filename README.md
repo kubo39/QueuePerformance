@@ -92,7 +92,6 @@ Hint: used config file '/home/kubo39/dev/kubo39/QueuePerformance/nim.cfg' [Conf]
 (...)
 Hint: operation successful (23907 lines compiled; 1.475 sec total; 28.027MiB peakmem; Release Build) [SuccessX]
 $ ./nimchan
-$ ./nimchan
 unbounded_seq: 0.3609180450439453 sec
 unbounded_spsc: 1.505530118942261 sec
 unbounded_mpsc: 0.8148629665374756 sec
