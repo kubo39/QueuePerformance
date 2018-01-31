@@ -36,7 +36,7 @@ rustc 1.25.0-nightly (def3269a7 2018-01-30)
 
 ** **NOTE** **
 
-DのQueue実装は動的にキューのサイズを制限できるが、実装は一般的な連結リストベースの制限なしMPSCキュー実装なのでbounded prefixをつけている。
+DのQueue実装は動的にキューのサイズを制限できるが、実装は一般的な連結リストベースの制限なしMPSCキュー実装なのでunbounded prefixをつけている。
 
 ```console
 $ dmd -O dchan.d
