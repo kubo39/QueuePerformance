@@ -18,6 +18,8 @@ $ cat /proc/cpuinfo| grep processor| wc -l
 ```console
 $ dmd --version| head -1
 DMD64 D Compiler v2.078.0
+$ ldc2 -version| head -1
+LDC - the LLVM D compiler (1.7.0):
 $ go version
 go version go1.6.2 linux/amd64
 $ nim --version 2>&1| head -1
@@ -44,6 +46,14 @@ $ ./dchan
 unbounded_seq: 2 secs, 341 ms, 478 μs, and 4 hnsecs
 unbounded_spsc: 3 secs, 236 ms, 297 μs, and 8 hnsecs
 unbounded_mpsc: 3 secs, 243 ms, 889 μs, and 5 hnsecs
+$ ./dchan
+unbounded_seq: 1 sec, 107 ms, 251 μs, and 9 hnsecs
+unbounded_spsc: 2 secs, 203 ms, 838 μs, and 8 hnsecs
+unbounded_mpsc: 2 secs, 14 ms, 670 μs, and 4 hnsecs
+```
+
+```console
+
 ```
 
 ### Go
