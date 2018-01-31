@@ -52,10 +52,6 @@ unbounded_spsc: 2 secs, 203 ms, 838 μs, and 8 hnsecs
 unbounded_mpsc: 2 secs, 14 ms, 670 μs, and 4 hnsecs
 ```
 
-```console
-
-```
-
 ### Go
 
 ```console
