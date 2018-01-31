@@ -75,16 +75,17 @@ bounded_spsc              Go chan           0.319 sec
 Nimのthreadpoolはimport時にネイティブスレッドをCPUコア数分だけ生成して、spawn関数はそのOSスレッドを使い回すので正確な比較にはならない。
 
 ```console
-$ nim c nimchan.nim
+$ nim c -d:release nimchan.nim
 Hint: used config file '/home/kubo39/.choosenim/toolchains/nim-0.17.2/config/nim.cfg' [Conf]
 Hint: used config file '/home/kubo39/dev/kubo39/nim.cfg' [Conf]
 Hint: used config file '/home/kubo39/dev/kubo39/QueuePerformance/nim.cfg' [Conf]
 (...)
-Hint: operation successful (23907 lines compiled; 0.865 sec total; 35.035MiB peakmem; Debug Build) [SuccessX]
+Hint: operation successful (23907 lines compiled; 1.475 sec total; 28.027MiB peakmem; Release Build) [SuccessX]
 $ ./nimchan
-unbounded_seq: 0.7909119129180908 sec
-unbounded_spsc: 2.051985025405884 sec
-unbounded_mpsc: 1.746577978134155 sec
+$ ./nimchan
+unbounded_seq: 0.3609180450439453 sec
+unbounded_spsc: 1.505530118942261 sec
+unbounded_mpsc: 0.8148629665374756 sec
 ```
 
 ### Python
