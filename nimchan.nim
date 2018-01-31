@@ -57,6 +57,6 @@ proc run(name: string, f: proc()) =
   echo name & ": ",  elapsed, " sec"
 
 when isMainModule:
-  run("bounded_seq", seque)
-  run("bounded_spsc", spsc)
-  run("bounded_mpsc", mpsc)
+  run("unbounded_seq", seque)
+  run("unbounded_spsc", spsc)
+  run("unbounded_mpsc", mpsc)

@@ -45,5 +45,5 @@ def run(name, f):
     print(name, ":", elapsed, "sec")
 
 if "__main__" == __name__:
-    run("bounded_seq", seq)
-    run("bounded_mpsc", mpsc)
+    run("unbounded_seq", seq)
+    run("unbounded_mpsc", mpsc)

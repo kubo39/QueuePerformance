@@ -53,7 +53,7 @@ void run(string name, void function() f)
 
 void main()
 {
-    run("bounded_seq", &seq);
-    run("bounded_spsc", &spsc);
-    run("bounded_mpsc", &mpsc);
+    run("unbounded_seq", &seq);
+    run("unbounded_spsc", &spsc);
+    run("unbounded_mpsc", &mpsc);
 }
