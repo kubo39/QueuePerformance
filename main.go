@@ -1,3 +1,5 @@
+// from https://github.com/crossbeam-rs/crossbeam-channel benchmark script.
+
 package main
 
 import "fmt"
