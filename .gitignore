@@ -1,0 +1,6 @@
+dchan
+nimchan
+nimcache
+*~
+target/
+*.o

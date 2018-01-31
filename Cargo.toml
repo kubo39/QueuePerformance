@@ -1,0 +1,11 @@
+[package]
+name = "benchmark"
+version = "0.1.0"
+
+[dependencies]
+crossbeam = "0.3.2"
+crossbeam-channel = { version = "0.1.2", features = ["nightly"] }
+
+[[bin]]
+name = "crossbeam-channel"
+path = "crossbeam-channel.rs"
