@@ -34,12 +34,16 @@ rustc 1.25.0-nightly (def3269a7 2018-01-30)
 
 ### D
 
+** **NOTE** **
+
+DのQueue実装は動的にキューのサイズを制限できるが、実装は一般的な連結リストベースの制限なしMPSCキュー実装なのでbounded prefixをつけている。
+
 ```console
 $ dmd -O dchan.d
 $ ./dchan
-bounded_seq: 2 secs, 341 ms, 478 μs, and 4 hnsecs
-bounded_spsc: 3 secs, 236 ms, 297 μs, and 8 hnsecs
-bounded_mpsc: 3 secs, 243 ms, 889 μs, and 5 hnsecs
+unbounded_seq: 2 secs, 341 ms, 478 μs, and 4 hnsecs
+unbounded_spsc: 3 secs, 236 ms, 297 μs, and 8 hnsecs
+unbounded_mpsc: 3 secs, 243 ms, 889 μs, and 5 hnsecs
 ```
 
 ### Go
@@ -66,6 +70,10 @@ bounded_spsc              Go chan           0.319 sec
 
 ### Nim
 
+** **NOTE** **
+
+Nimのthreadpoolはimport時にネイティブスレッドをCPUコア数分だけ生成して、spawn関数はそのOSスレッドを使い回すので正確な比較にはならない。
+
 ```console
 $ nim c nimchan.nim
 Hint: used config file '/home/kubo39/.choosenim/toolchains/nim-0.17.2/config/nim.cfg' [Conf]
@@ -74,31 +82,33 @@ Hint: used config file '/home/kubo39/dev/kubo39/QueuePerformance/nim.cfg' [Conf]
 (...)
 Hint: operation successful (23907 lines compiled; 0.865 sec total; 35.035MiB peakmem; Debug Build) [SuccessX]
 $ ./nimchan
-bounded_seq: 0.7909119129180908 sec
-bounded_spsc: 2.051985025405884 sec
-bounded_mpsc: 1.746577978134155 sec
+unbounded_seq: 0.7909119129180908 sec
+unbounded_spsc: 2.051985025405884 sec
+unbounded_mpsc: 1.746577978134155 sec
 ```
 
 ### Python
 
+** **NOTE** **
+
+PythonのQueue実装はPythonで書かれている。
+
 ```console
 $ python pychan.py
-bounded_seq : 18.500499963760376 sec
-bounded_mpsc : 27.514017581939697 sec
+unbounded_seq : 18.500499963760376 sec
+unbounded_mpsc : 27.514017581939697 sec
 ```
 
 ### Ruby
 
 ```console
 $ ruby rbchan.rb
-bounded_seq: 0.54665814 sec
-bounded_spsc: 0.529027028 sec
-bounded_mpsc: 0.524194428 sec
+unbounded_seq: 0.54665814 sec
+unbounded_spsc: 0.529027028 sec
+unbounded_mpsc: 0.524194428 sec
 ```
 
 ### Rust
-
-** **NOTE** ** unbounded_xxx is similar with other languages.
 
 ```console
 $ rustup run nightly cargo run --release --bin crossbeam-channel
