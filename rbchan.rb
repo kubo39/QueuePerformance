@@ -12,7 +12,7 @@ def run name, f
   now = Time.now
   f.call
   elapsed = Time.now - now
-  print name, ": ", elapsed, " sec\n"
+  print name, " Ruby Queue ", elapsed, " sec\n"
 end
 
 if __FILE__ == $0
@@ -50,7 +50,28 @@ if __FILE__ == $0
     $mpsc_queue.close
   end
 
+  mpmc = lambda do
+    threads = []
+    THREADS.times {
+      threads << Thread.start {
+        (MESSAGES / THREADS).times {|i|
+          $mpsc_queue.push i
+        }
+      }
+    }
+    THREADS.times {
+      threads << Thread.start {
+        (MESSAGES / THREADS).times {|i|
+          $mpsc_queue.pop
+        }
+      }
+    }
+    ThreadsWait.all_waits(*threads)
+    $mpsc_queue.close
+  end
+
   run "unbounded_seq", seq
   run "unbounded_spsc", spsc
   run "unbounded_mpsc", mpsc
+  run "unbounded_mpmc", mpmc
 end
