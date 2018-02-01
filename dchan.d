@@ -1,4 +1,5 @@
 import core.thread : thread_joinAll;
+import std.compiler : vendor;
 import std.concurrency;
 import std.conv : to;
 import std.datetime.stopwatch;
@@ -48,7 +49,10 @@ void run(string name, void function() f)
     auto sw = StopWatch(AutoStart.yes);
     f();
     auto elapsed = sw.peek();
-    writeln(name ~ ": " ~ elapsed.to!string);
+    writefln("%-25s %15s %7s.%3s sec",
+             name,
+             vendor.to!string ~ " std.concurrency",
+             elapsed.total!"seconds", elapsed.total!"msecs");
 }
 
 void main()

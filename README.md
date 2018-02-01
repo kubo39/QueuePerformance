@@ -41,15 +41,15 @@ rustc 1.25.0-nightly (def3269a7 2018-01-30)
 DのQueue実装は動的にキューのサイズを制限できるが、実装は一般的な連結リストベースの制限なしMPSCキュー実装なのでunbounded prefixをつけている。
 
 ```console
-$ dmd -O dchan.d
+$ rdmd -O dchan.d
+unbounded_seq             digitalMars std.concurrency       2.2267 sec
+unbounded_spsc            digitalMars std.concurrency       3.3386 sec
+unbounded_mpsc            digitalMars std.concurrency       3.3224 sec
+$ ldc2 -O dchan.d
 $ ./dchan
-unbounded_seq: 2 secs, 341 ms, 478 μs, and 4 hnsecs
-unbounded_spsc: 3 secs, 236 ms, 297 μs, and 8 hnsecs
-unbounded_mpsc: 3 secs, 243 ms, 889 μs, and 5 hnsecs
-$ ./dchan
-unbounded_seq: 1 sec, 107 ms, 251 μs, and 9 hnsecs
-unbounded_spsc: 2 secs, 203 ms, 838 μs, and 8 hnsecs
-unbounded_mpsc: 2 secs, 14 ms, 670 μs, and 4 hnsecs
+unbounded_seq             llvm std.concurrency       1.1673 sec
+unbounded_spsc            llvm std.concurrency       2.2086 sec
+unbounded_mpsc            llvm std.concurrency       2.2002 sec
 ```
 
 ### Go
