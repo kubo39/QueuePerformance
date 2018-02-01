@@ -44,6 +44,15 @@ void mpsc()
     thread_joinAll;
 }
 
+string getCompilerString(string v)
+{
+    if (v == "digitalMars")
+        return "dmd";
+    else if (v == "llvm")
+        return "ldc";
+    else assert(false);
+}
+
 void run(string name, void function() f)
 {
     auto sw = StopWatch(AutoStart.yes);
@@ -51,7 +60,7 @@ void run(string name, void function() f)
     auto elapsed = sw.peek();
     writefln("%-25s %15s %7s.%3s sec",
              name,
-             vendor.to!string ~ " std.concurrency",
+             vendor.to!string.getCompilerString ~ " std.concurrency",
              elapsed.total!"seconds", elapsed.total!"msecs");
 }
 
