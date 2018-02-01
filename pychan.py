@@ -42,7 +42,7 @@ def run(name, f):
     now = time.time()
     f()
     elapsed = time.time() - now
-    print(name, ":", elapsed, "sec")
+    print(name, "Python Queue", elapsed, "sec")
 
 if "__main__" == __name__:
     run("unbounded_seq", seq)
