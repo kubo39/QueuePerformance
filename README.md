@@ -88,9 +88,10 @@ Hint: used config file '/home/kubo39/dev/kubo39/QueuePerformance/nim.cfg' [Conf]
 (...)
 Hint: operation successful (23907 lines compiled; 1.475 sec total; 28.027MiB peakmem; Release Build) [SuccessX]
 $ ./nimchan
-unbounded_seq: 0.3609180450439453 sec
-unbounded_spsc: 1.505530118942261 sec
-unbounded_mpsc: 0.8148629665374756 sec
+unbounded_seq Nim channel 0.5475049018859863 sec
+unbounded_spsc Nim channel 1.453600883483887 sec
+unbounded_mpsc Nim channel 1.044481992721558 sec
+unbounded_mpmc Nim channel 1.603430986404419 sec
 ```
 
 ### Python
@@ -109,9 +110,10 @@ unbounded_mpsc : 27.514017581939697 sec
 
 ```console
 $ ruby rbchan.rb
-unbounded_seq: 0.54665814 sec
-unbounded_spsc: 0.529027028 sec
-unbounded_mpsc: 0.524194428 sec
+unbounded_seq Ruby Queue 0.63472069 sec
+unbounded_spsc Ruby Queue 0.580684254 sec
+unbounded_mpsc Ruby Queue 0.591327483 sec
+unbounded_mpmc Ruby Queue 0.223464353 sec
 ```
 
 ### Rust
@@ -120,26 +122,8 @@ unbounded_mpsc: 0.524194428 sec
 $ rustup run nightly cargo run --release --bin crossbeam-channel
     Finished release [optimized] target(s) in 0.0 secs
      Running `target/release/crossbeam-channel`
-bounded0_mpmc             Rust channel      1.240 sec
-bounded0_mpsc             Rust channel      1.322 sec
-bounded0_select_both      Rust channel      2.571 sec
-bounded0_select_rx        Rust channel      2.169 sec
-bounded0_spsc             Rust channel      1.679 sec
-bounded1_mpmc             Rust channel      0.708 sec
-bounded1_mpsc             Rust channel      0.909 sec
-bounded1_select_both      Rust channel      1.015 sec
-bounded1_select_rx        Rust channel      0.759 sec
-bounded1_spsc             Rust channel      1.284 sec
-bounded_mpmc              Rust channel      0.253 sec
-bounded_mpsc              Rust channel      0.259 sec
-bounded_select_both       Rust channel      0.524 sec
-bounded_select_rx         Rust channel      0.360 sec
-bounded_seq               Rust channel      0.155 sec
-bounded_spsc              Rust channel      0.122 sec
-unbounded_mpmc            Rust channel      0.251 sec
-unbounded_mpsc            Rust channel      0.280 sec
-unbounded_select_both     Rust channel      0.441 sec
-unbounded_select_rx       Rust channel      0.361 sec
-unbounded_seq             Rust channel      0.282 sec
-unbounded_spsc            Rust channel      0.319 sec
+unbounded_mpmc            Rust channel      0.274 sec
+unbounded_mpsc            Rust channel      0.342 sec
+unbounded_seq             Rust channel      0.361 sec
+unbounded_spsc            Rust channel      0.332 sec
 ```
