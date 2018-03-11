@@ -1,6 +1,6 @@
 import os
-# import strformat
-import threadpool # spawn
+import strformat
+import threadpool
 import times
 
 const MESSAGES = 5_000_000
@@ -74,8 +74,7 @@ proc run(name: string, f: proc()) =
   let time = epochTime()
   f()
   let elapsed = epochTime() - time
-#  echo &"""{name:<25} {"Nim channel":<15} {elapsed:7.3} sec"""
-  echo name & " Nim channel ",  elapsed, " sec"
+  echo &"""{name:<25} {"Nim channel":<15} {elapsed:7.3} sec"""
 
 when isMainModule:
   run("unbounded_seq", seque)

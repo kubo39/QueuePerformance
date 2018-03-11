@@ -23,7 +23,7 @@ LDC - the LLVM D compiler (1.7.0):
 $ go version
 go version go1.6.2 linux/amd64
 $ nim --version 2>&1| head -1
-Nim Compiler Version 0.17.2 (2017-09-07) [Linux: amd64]
+Nim Compiler Version 0.18.0 [Linux: amd64]
 $ python -V
 Python 3.6.1
 $ ruby -v
@@ -82,16 +82,12 @@ Nimのthreadpoolはimport時にネイティブスレッドをCPUコア数分だ�
 
 ```console
 $ nim c -d:release nimchan.nim
-Hint: used config file '/home/kubo39/.choosenim/toolchains/nim-0.17.2/config/nim.cfg' [Conf]
-Hint: used config file '/home/kubo39/dev/kubo39/nim.cfg' [Conf]
-Hint: used config file '/home/kubo39/dev/kubo39/QueuePerformance/nim.cfg' [Conf]
 (...)
-Hint: operation successful (23907 lines compiled; 1.475 sec total; 28.027MiB peakmem; Release Build) [SuccessX]
 $ ./nimchan
-unbounded_seq Nim channel 0.5475049018859863 sec
-unbounded_spsc Nim channel 1.453600883483887 sec
-unbounded_mpsc Nim channel 1.044481992721558 sec
-unbounded_mpmc Nim channel 1.603430986404419 sec
+unbounded_seq             Nim channel       0.465 sec
+unbounded_spsc            Nim channel        1.17 sec
+unbounded_mpsc            Nim channel        1.31 sec
+unbounded_mpmc            Nim channel        2.35 sec
 ```
 
 ### Python
