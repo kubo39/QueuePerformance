@@ -49,10 +49,9 @@ proc push*[T](Q: ptr MsQueue[T], value: T) =
   node.next = nil
 
   while true:
-    tail = Q.tail
+    tail = atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE)
     next = tail.next
-
-    if tail == Q.tail:
+    if tail == atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE):
       if next == nil:
         if cas(addr(tail.next), nil, cast[ptr NodeT[T]](node)):
           break
@@ -65,21 +64,20 @@ proc pop*[T](Q: ptr MsQueue[T], value: var T): bool =
     head, tail, next: ptr NodeT[T]
 
   while true:
-    head = Q.head
-    tail = Q.tail
+    head = atomicLoadN(addr(Q.head), ATOMIC_ACQUIRE)
+    tail = atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE)
     next = head.next
 
-    if head == Q.head:
+    if head == atomicLoadN(addr(Q.head), ATOMIC_ACQUIRE):
       if head == tail:
         if next == nil:
           return false
-        discard cas(addr(Q.tail), tail, next)
+        var TP = atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE)
+        discard cas(addr(TP), tail, next)
       else:
-        if next != nil:
-          value = next.value
-        else:
-          return false
-        if cas(addr(Q.head), head, next):
+        value = next.value
+        var HP = atomicLoadN(addr(Q.head), ATOMIC_ACQUIRE)
+        if cas(addr(HP), head, next):
           break
   return true
 
@@ -88,24 +86,19 @@ proc peek*[T](Q: ptr MsQueue[T], value: var T): bool =
     head, tail, next: ptr NodeT[T]
 
   while true:
-    head = Q.head
-    tail = Q.tail
+    head = atomicLoadN(addr(Q.head), ATOMIC_ACQUIRE)
+    tail = atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE)
     next = head.next
 
-    if head == Q.head:
+    if head == atomicLoadN(addr(Q.head), ATOMIC_ACQUIRE):
       if head == tail:
         if next == nil:
           return false
-        discard cas(addr(Q.tail), tail, next)
+        var TP = atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE)
+        discard cas(addr(TP), tail, next)
       else:
-        if next != nil:
-          value = next.value
-        else:
-          return false
+        value = next.value
         return true
-
-proc free*(Q: ptr MsQueue) =
-  dealloc(Q)
 
 when isMainModule:
   import os, times
