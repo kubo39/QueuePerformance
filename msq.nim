@@ -57,7 +57,8 @@ proc push*[T](Q: ptr MsQueue[T], value: T) =
           break
       else:
         discard cas(addr(Q.tail), tail, next)
-  discard cas(addr(Q.tail), tail, cast[ptr NodeT[T]](node))
+  var TP = atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE)
+  discard cas(addr(TP), tail, cast[ptr NodeT[T]](node))
 
 proc pop*[T](Q: ptr MsQueue[T], value: var T): bool =
   var
@@ -100,52 +101,90 @@ proc peek*[T](Q: ptr MsQueue[T], value: var T): bool =
         value = next.value
         return true
 
+proc free*(Q: ptr MSQueue) =
+  dealloc(Q)
+
 when isMainModule:
-  import os, times
-  var
-    Q = msqInitialize[int]()
-    C: Channel[int]
-    i: int
-
-  Q.push(1)
-
-  assert(Q.pop(i))
-  assert(i == 1) # 1
-
-  assert(not Q.pop(i))
-  assert(i == 1)
-
-  Q.push(2)
-  Q.push(3)
-  Q.push(4)
-  Q.push(5)
-
-  assert(Q.pop(i))
-  assert(i == 2) # 2
-  assert(Q.pop(i))
-  assert(i == 3) # 3
-  assert(Q.pop(i))
-  assert(i == 4) # 4
-
-  assert(Q.peek(i))
-  assert(i == 5) # 5
-
-  # Benchmark msqueue vs Nim's channel
-
-  Q = msqInitialize[int]()
-  open(C)
-
-  var old =  epochTime()
-  for ii in 0 .. 100000:
-    Q.push(ii)
-    discard Q.pop(i)
-  echo "msq done"
-  echo epochTime() - old
-
-  old =  epochTime()
-  for ii in 0 .. 100000:
-    C.send(ii)
-    discard C.recv()
-
-  echo "chan done"
-  echo epochTime() - old
+  import os
+  import strformat
+  import threadpool
+  import times
+  
+  const MESSAGES = 5_000_000
+  const THREADS = 4
+  
+  type IntMsQueue = ptr MsQueue[int]
+  var channels: array[0..3, IntMsQueue]
+  
+  proc seque =
+    channels[0] = msqInitialize[int]()
+    for i in 0 .. MESSAGES - 1:
+      channels[0].push(int(i))
+    for i in 0 .. MESSAGES - 1:
+      var ii: int
+      discard channels[0].pop(ii)
+    sync()
+    channels[0].free()
+  
+  proc sender1 {.thread.} =
+    for i in 0 .. MESSAGES - 1:
+      channels[1].push(int(i))
+  
+  proc receiver1 {.thread.} =
+    for i in 0 .. MESSAGES - 1:
+      var ii: int
+      discard channels[1].pop(ii)
+  
+  proc spsc =
+    channels[1] = msqInitialize[int]()
+    spawn sender1()
+    spawn receiver1()
+    sync()
+    channels[1].free()
+  
+  proc sender2 {.thread.} =
+    for i in 0 .. uint(MESSAGES / THREADS) - 1:
+      channels[2].push(int(i))
+  
+  proc receiver2 {.thread.} =
+    for i in 0 .. MESSAGES - 1:
+      var ii: int
+      discard channels[2].pop(ii)
+  
+  proc mpsc =
+    channels[2] = msqInitialize[int]()
+    for _ in 0 .. THREADS - 1:
+      spawn sender2()
+    spawn receiver2()
+    sync()
+    channels[2].free()
+  
+  proc sender3 {.thread.} =
+    for i in 0 .. uint(MESSAGES / THREADS) - 1:
+      channels[3].push(int(i))
+  
+  proc receiver3 {.thread.} =
+    for i in 0 .. uint(MESSAGES / THREADS) - 1:
+      var ii: int
+      discard channels[3].pop(ii)
+  
+  proc mpmc =
+    channels[3] = msqInitialize[int]()
+    for _ in 0 .. THREADS - 1:
+      spawn sender3()
+    for _ in 0 .. THREADS - 1:
+      spawn receiver3()
+    sync()
+    channels[3].free()
+  
+  proc run(name: string, f: proc()) =
+    let time = epochTime()
+    f()
+    let elapsed = epochTime() - time
+    echo &"""{name:<25} {"msq channel":<15} {elapsed:7.3} sec"""
+  
+  when isMainModule:
+    run("unbounded_seq", seque)
+    run("unbounded_spsc", spsc)
+    run("unbounded_mpsc", mpsc)
+    run("unbounded_mpmc", mpmc)
