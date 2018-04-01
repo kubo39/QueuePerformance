@@ -57,8 +57,7 @@ proc push*[T](Q: ptr MsQueue[T], value: T) =
           break
       else:
         discard cas(addr(Q.tail), tail, next)
-  var TP = atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE)
-  discard cas(addr(TP), tail, cast[ptr NodeT[T]](node))
+  discard cas(addr(Q.tail), tail, cast[ptr NodeT[T]](node))
 
 proc pop*[T](Q: ptr MsQueue[T], value: var T): bool =
   var
@@ -73,12 +72,13 @@ proc pop*[T](Q: ptr MsQueue[T], value: var T): bool =
       if head == tail:
         if next == nil:
           return false
-        var TP = atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE)
-        discard cas(addr(TP), tail, next)
+        discard cas(addr(Q.tail), tail, next)
       else:
+        if next == nil:
+          return false
         value = next.value
         var HP = atomicLoadN(addr(Q.head), ATOMIC_ACQUIRE)
-        if cas(addr(HP), head, next):
+        if cas(addr(Q.head), head, next):
           break
   return true
 
@@ -98,6 +98,8 @@ proc peek*[T](Q: ptr MsQueue[T], value: var T): bool =
         var TP = atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE)
         discard cas(addr(TP), tail, next)
       else:
+        if next == nil:
+          return false
         value = next.value
         return true
 
