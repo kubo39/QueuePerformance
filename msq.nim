@@ -1,107 +1,76 @@
-# msqueue
-# Copyright 2vg
-# Michael-Scott queue implemented in Nim
-
 type
-  NodeT[T] = object
+  MSNode[T] = object
     value: T
-    next: ptr NodeT[T]
+    next: ptr MSnode[T]
 
-  MsQueue*[T] = object
-    head: ptr NodeT[T]
-    tail: ptr NodeT[T]
+  MSQueue*[T] = object
+    head, tail: ptr MSNode[T]
 
-proc newNode[T](): ref NodeT[T] =
-  result = NodeT[T].new()#create(NodeT[T])
+proc newNode[T](): ptr MSNode[T] =
+  result = cast[ptr MSNode[T]](alloc(sizeof(MSNode[T])))
   result.next = nil
 
-proc newMsQueue*[T](): ptr MsQueue[T] =
-  result = create(MsQueue[T])
-  result.head = nil
-  result.tail = nil
-
-proc msqInitialize*[T](): ptr MsQueue[T] =
-  var
-    Q = newMsQueue[T]()
-    node = newNode[T]()
-
-  node.next = nil
-
-  Q.head = cast[ptr NodeT[T]](node)
-  Q.tail = cast[ptr NodeT[T]](node)
-
-  return Q
-
-proc initialize*[T](Q: ptr MsQueue[T]) =
+proc msqInitialize*[T](): ptr MSQueue[T] =
   var node = newNode[T]()
 
-  node.next = nil
+  result = cast[ptr MSQueue[T]](alloc0(sizeof(MSQueue[T])))
+  result.head = node
+  result.tail = node
 
-  atomicStoreN(addr(Q.head), cast[ptr NodeT[T]](node), ATOMIC_RELAXED)
-  atomicStoreN(addr(Q.tail), cast[ptr NodeT[T]](node), ATOMIC_RELAXED)
-
-proc push*[T](Q: ptr MsQueue[T], value: T) =
+proc push*[T](Q: ptr MSQueue, value: T) =
   var
     node = newNode[T]()
-    next, tail: ptr NodeT[T]
+    tail, next: ptr MSNode[T]
 
   node.value = value
-  node.next = nil
 
   while true:
-    tail = atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE)
+    tail = Q.tail
     next = tail.next
-    if tail == atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE):
-      if next == nil:
-        if cas(addr(tail.next), nil, cast[ptr NodeT[T]](node)):
-          break
-      else:
-        discard cas(addr(Q.tail), tail, next)
-  discard cas(addr(Q.tail), tail, cast[ptr NodeT[T]](node))
+    if tail != Q.tail: continue
+    if next == nil:
+      if cas(addr(tail.next), next, node):
+        discard cas(addr(Q.tail), tail, node)
+        return
+    else:
+      discard cas(addr(Q.tail), tail, next)
 
-proc pop*[T](Q: ptr MsQueue[T], value: var T): bool =
+proc pop*[T](Q: ptr MSQueue, value: var T): bool =
   var
-    head, tail, next: ptr NodeT[T]
+    head, tail, next: ptr MSNode[T]
 
   while true:
-    head = atomicLoadN(addr(Q.head), ATOMIC_ACQUIRE)
-    tail = atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE)
+    head = Q.head
+    tail = Q.tail
     next = head.next
 
-    if head == atomicLoadN(addr(Q.head), ATOMIC_ACQUIRE):
-      if head == tail:
-        if next == nil:
-          return false
-        discard cas(addr(Q.tail), tail, next)
-      else:
-        if next == nil:
-          return false
-        value = next.value
-        var HP = atomicLoadN(addr(Q.head), ATOMIC_ACQUIRE)
-        if cas(addr(Q.head), head, next):
-          break
-  return true
-
-proc peek*[T](Q: ptr MsQueue[T], value: var T): bool =
-  var
-    head, tail, next: ptr NodeT[T]
-
-  while true:
-    head = atomicLoadN(addr(Q.head), ATOMIC_ACQUIRE)
-    tail = atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE)
-    next = head.next
-
-    if head == atomicLoadN(addr(Q.head), ATOMIC_ACQUIRE):
-      if head == tail:
-        if next == nil:
-          return false
-        var TP = atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE)
-        discard cas(addr(TP), tail, next)
-      else:
-        if next == nil:
-          return false
-        value = next.value
+    if head != Q.head: continue
+    if head == tail:
+      if isNil(next):
+        return false
+      discard cas(addr(Q.tail), tail, next)
+    else:
+      value = next.value
+      if cas(addr(Q.head), head, next):
         return true
+
+proc peek*[T](Q: ptr MSQueue, value: var T): bool =
+  var
+    head, tail, next: ptr MSNode[T]
+
+  while true:
+    head = Q.head
+    tail = Q.tail
+    next = head.next
+
+    if head != Q.head: continue
+    if head == tail:
+      if isNil(next):
+        return false
+      discard cas(addr(Q.tail), tail, next)
+    else:
+      value = next.value
+      return true
 
 proc free*(Q: ptr MSQueue) =
   dealloc(Q)
@@ -115,7 +84,7 @@ when isMainModule:
   const MESSAGES = 5_000_000
   const THREADS = 4
   
-  type IntMsQueue = ptr MsQueue[int]
+  type IntMsQueue = ptr MSQueue[int]
   var channels: array[0..3, IntMsQueue]
   
   proc seque =
