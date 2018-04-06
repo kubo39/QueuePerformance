@@ -25,9 +25,9 @@ proc push*[T](Q: ptr MSQueue, value: T) =
   node.value = value
 
   while true:
-    tail = Q.tail
+    tail = atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE)
     next = tail.next
-    if tail != Q.tail: continue
+    if tail != atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE): continue
     if next == nil:
       if cas(addr(tail.next), next, node):
         discard cas(addr(Q.tail), tail, node)
@@ -40,11 +40,11 @@ proc pop*[T](Q: ptr MSQueue, value: var T): bool =
     head, tail, next: ptr MSNode[T]
 
   while true:
-    head = Q.head
-    tail = Q.tail
+    head = atomicLoadN(addr(Q.head), ATOMIC_ACQUIRE)
+    tail = atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE)
     next = head.next
 
-    if head != Q.head: continue
+    if head != atomicLoadN(addr(Q.head), ATOMIC_ACQUIRE): continue
     if head == tail:
       if isNil(next):
         return false
@@ -59,11 +59,11 @@ proc peek*[T](Q: ptr MSQueue, value: var T): bool =
     head, tail, next: ptr MSNode[T]
 
   while true:
-    head = Q.head
-    tail = Q.tail
+    head = atomicLoadN(addr(Q.head), ATOMIC_ACQUIRE)
+    tail = atomicLoadN(addr(Q.tail), ATOMIC_ACQUIRE)
     next = head.next
 
-    if head != Q.head: continue
+    if head != atomicLoadN(addr(Q.head), ATOMIC_ACQUIRE): continue
     if head == tail:
       if isNil(next):
         return false
