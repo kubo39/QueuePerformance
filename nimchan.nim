@@ -1,6 +1,5 @@
 import os
 import strformat
-import threadpool
 import times
 
 const MESSAGES = 5_000_000
@@ -15,9 +14,7 @@ proc seque =
     channels[0].send(int(i))
   for i in 0 .. MESSAGES - 1:
     discard channels[0].recv()
-  sync()
   channels[0].close()
-
 
 proc sender1 {.thread.} =
   for i in 0 .. MESSAGES - 1:
@@ -28,10 +25,15 @@ proc receiver1 {.thread.} =
     discard channels[1].recv()
 
 proc spsc =
+  var
+    spscSender: Thread[void]
+    spscReceiver: Thread[void]
+
   channels[1].open()
-  spawn sender1()
-  spawn receiver1()
-  sync()
+  createThread(spscSender, sender1)
+  createThread(spscReceiver, receiver1)
+  joinThread(spscSender)
+  joinThread(spscReceiver)
   channels[1].close()
 
 
@@ -44,11 +46,16 @@ proc receiver2 {.thread.} =
     discard channels[2].recv()
 
 proc mpsc =
+  var
+    mpscSender: array[0 .. THREADS - 1, Thread[void]]
+    mpscReceiver: Thread[void]
+
   channels[2].open()
-  for _ in 0 .. THREADS - 1:
-    spawn sender2()
-  spawn receiver2()
-  sync()
+  for i in 0 .. THREADS - 1:
+    createThread(mpscSender[i], sender2)
+  createThread(mpscReceiver, receiver2)
+  joinThreads(mpscSender)
+  joinThread(mpscReceiver)
   channels[2].close()
 
 
@@ -61,14 +68,17 @@ proc receiver3 {.thread.} =
     discard channels[3].recv()
 
 proc mpmc =
+  var
+    mpmcSender: array[0 .. THREADS - 1, Thread[void]]
+    mpmcReceiver: array[0 .. THREADS - 1, Thread[void]]
   channels[3].open()
-  for _ in 0 .. THREADS - 1:
-    spawn sender3()
-  for _ in 0 .. THREADS - 1:
-    spawn receiver3()
-  sync()
+  for i in 0 .. THREADS - 1:
+    createThread(mpmcSender[i], sender3)
+  for i in 0 .. THREADS - 1:
+    createThread(mpmcReceiver[i], receiver3)
+  joinThreads(mpmcSender)
+  joinThreads(mpmcReceiver)
   channels[3].close()
-
 
 proc run(name: string, f: proc()) =
   let time = epochTime()
