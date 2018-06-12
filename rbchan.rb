@@ -19,7 +19,7 @@ if __FILE__ == $0
   seq = lambda do
     MESSAGES.times {|i| $seq_queue.push i }
     MESSAGES.times { $seq_queue.pop }
-    $seq_queue.close
+    # $seq_queue.close
   end
 
   spsc = lambda do
@@ -31,7 +31,7 @@ if __FILE__ == $0
     }
     th1.join
     th2.join
-    $spsc_queue.close
+    # $spsc_queue.close
   end
 
   mpsc = lambda do
@@ -47,7 +47,7 @@ if __FILE__ == $0
       MESSAGES.times { $mpsc_queue.pop }
     }
     ThreadsWait.all_waits(*threads)
-    $mpsc_queue.close
+    # $mpsc_queue.close
   end
 
   mpmc = lambda do
@@ -67,7 +67,7 @@ if __FILE__ == $0
       }
     }
     ThreadsWait.all_waits(*threads)
-    $mpsc_queue.close
+    # $mpsc_queue.close
   end
 
   run "unbounded_seq", seq
