@@ -1,3 +1,5 @@
+#!/usr/bin/python2
+
 import sys
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches

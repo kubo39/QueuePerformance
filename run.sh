@@ -6,4 +6,4 @@ nim c -r -d:release nimchan.nim | tee nim.txt
 rdmd -O dchan.d | tee dmd.txt
 ruby rbchan.rb | tee ruby.txt
 
-python plot.py *.txt
+./plot.py *.txt
