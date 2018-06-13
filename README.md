@@ -6,9 +6,9 @@
 
 ```console
 $ uname -mrv
-4.4.0-98-generic #121-Ubuntu SMP Tue Oct 10 14:24:03 UTC 2017 x86_64
+4.13.0-43-generic #48~16.04.1-Ubuntu SMP Thu May 17 12:56:46 UTC 2018 x86_64
 $ cat /proc/cpuinfo| grep "model name"| head -1
-model name      : Intel(R) Core(TM) i7-7500U CPU @ 2.70GHz
+model name	: Intel(R) Core(TM) i7-6500U CPU @ 2.50GHz
 $ cat /proc/cpuinfo| grep processor| wc -l
 4
 ```
@@ -17,19 +17,15 @@ $ cat /proc/cpuinfo| grep processor| wc -l
 
 ```console
 $ dmd --version| head -1
-DMD64 D Compiler v2.078.0
-$ ldc2 -version| head -1
-LDC - the LLVM D compiler (1.7.0):
+DMD64 D Compiler v2.080.1
 $ go version
-go version go1.6.2 linux/amd64
+go version go1.10.3 linux/amd64
 $ nim --version 2>&1| head -1
 Nim Compiler Version 0.18.0 [Linux: amd64]
-$ python -V
-Python 3.6.1
 $ ruby -v
-ruby 2.4.1p111 (2017-03-22 revision 58053) [x86_64-linux]
-$ rustup run nightly rustc --version
-rustc 1.25.0-nightly (def3269a7 2018-01-30)
+ruby 2.5.1p57 (2018-03-29 revision 63029) [x86_64-linux]
+$ rustc --version
+rustc 1.26.2 (594fb253c 2018-06-01)
 ```
 
 ## Languages
