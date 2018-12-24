@@ -9,9 +9,9 @@ $spsc_queue = Thread::Queue.new
 $mpsc_queue = Thread::Queue.new
 
 def run name, f
-  now = Time.now
+  now = Process.clock_gettime(Process::CLOCK_MONOTONIC)
   f.call
-  elapsed = Time.now - now
+  elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - now
   print name, " Ruby Queue ", elapsed, " sec\n"
 end
 

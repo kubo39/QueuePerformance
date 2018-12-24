@@ -64,9 +64,9 @@ def mpmc():
         t.join()
 
 def run(name, f):
-    now = time.time()
+    now = time.perf_counter()
     f()
-    elapsed = time.time() - now
+    elapsed = time.perf_counter() - now
     print(name, "Python Queue", elapsed, "sec")
 
 if "__main__" == __name__:

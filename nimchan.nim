@@ -1,4 +1,5 @@
 import os
+import posix
 import strformat
 import threadpool
 import times
@@ -15,7 +16,7 @@ proc seque =
     channels[0].send(int(i))
   for i in 0 .. MESSAGES - 1:
     discard channels[0].recv()
-  sync()
+  threadpool.sync()
   channels[0].close()
 
 
@@ -31,7 +32,7 @@ proc spsc =
   channels[1].open()
   spawn sender1()
   spawn receiver1()
-  sync()
+  threadpool.sync()
   channels[1].close()
 
 
@@ -48,7 +49,7 @@ proc mpsc =
   for _ in 0 .. THREADS - 1:
     spawn sender2()
   spawn receiver2()
-  sync()
+  threadpool.sync()
   channels[2].close()
 
 
@@ -66,14 +67,18 @@ proc mpmc =
     spawn sender3()
   for _ in 0 .. THREADS - 1:
     spawn receiver3()
-  sync()
+  threadpool.sync()
   channels[3].close()
 
+proc monotonicTime(): float64 =
+  var ts: Timespec
+  discard clock_gettime(CLOCK_MONOTONIC, ts)
+  result = ts.tv_sec.float64 * 1e9'f64 + ts.tv_nsec.float64
 
 proc run(name: string, f: proc()) =
-  let time = epochTime()
+  let time = monotonicTime()
   f()
-  let elapsed = epochTime() - time
+  let elapsed = monotonicTime() - time
   echo &"""{name:<25} {"Nim channel":<15} {elapsed:7.3} sec"""
 
 when isMainModule:
