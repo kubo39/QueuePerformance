@@ -25,7 +25,7 @@ Nim Compiler Version 0.18.0 [Linux: amd64]
 $ ruby -v
 ruby 2.5.1p57 (2018-03-29 revision 63029) [x86_64-linux]
 $ rustc --version
-rustc 1.26.2 (594fb253c 2018-06-01)
+rustc 1.35.0 (3c235d560 2019-05-20)
 ```
 
 ## Languages
@@ -111,11 +111,11 @@ unbounded_mpmc Ruby Queue 0.223464353 sec
 ### Rust
 
 ```console
-$ rustup run nightly cargo run --release --bin crossbeam-channel
+$ RUSTFLAGS="=C target-cpu=native" cargo run --release --bin crossbeam-channel
     Finished release [optimized] target(s) in 0.0 secs
      Running `target/release/crossbeam-channel`
-unbounded_mpmc            Rust channel      0.274 sec
-unbounded_mpsc            Rust channel      0.342 sec
-unbounded_seq             Rust channel      0.361 sec
-unbounded_spsc            Rust channel      0.332 sec
+unbounded_mpmc            Rust channel      0.200 sec
+unbounded_mpsc            Rust channel      0.230 sec
+unbounded_seq             Rust channel      0.326 sec
+unbounded_spsc            Rust channel      0.192 sec
 ```
