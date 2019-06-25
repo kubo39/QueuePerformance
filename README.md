@@ -6,7 +6,7 @@
 
 ```console
 $ uname -mrv
-4.13.0-43-generic #48~16.04.1-Ubuntu SMP Thu May 17 12:56:46 UTC 2018 x86_64
+4.15.0-52-generic #56-Ubuntu SMP Tue Jun 4 22:49:08 UTC 2019 x86_64
 $ cat /proc/cpuinfo| grep "model name"| head -1
 model name	: Intel(R) Core(TM) i7-6500U CPU @ 2.50GHz
 $ cat /proc/cpuinfo| grep processor| wc -l
