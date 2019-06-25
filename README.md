@@ -17,7 +17,9 @@ $ cat /proc/cpuinfo| grep processor| wc -l
 
 ```console
 $ dmd --version| head -1
-DMD64 D Compiler v2.080.1
+DMD64 D Compiler v2.086.1
+$ ldc -version| head -1
+LDC - the LLVM D compiler (1.16.0):
 $ go version
 go version go1.10.3 linux/amd64
 $ nim --version 2>&1| head -1
@@ -37,15 +39,18 @@ rustc 1.35.0 (3c235d560 2019-05-20)
 DのQueue実装は動的にキューのサイズを制限できるが、実装は一般的な連結リストベースの制限なしMPSCキュー実装なのでunbounded prefixをつけている。
 
 ```console
-$ rdmd -O dchan.d
-unbounded_seq             digitalMars std.concurrency       2.2267 sec
-unbounded_spsc            digitalMars std.concurrency       3.3386 sec
-unbounded_mpsc            digitalMars std.concurrency       3.3224 sec
-$ ldc2 -O dchan.d
+$ rdmd -mcpu=native -O -inline dchan.d
+unbounded_seq             digitalMars std.concurrency       2.2551 sec
+unbounded_spsc            digitalMars std.concurrency       3.3835 sec
+unbounded_mpsc            digitalMars std.concurrency       5.5216 sec
+```
+
+```console
+$ ldc2 -O3 dchan.d
 $ ./dchan
-unbounded_seq             llvm std.concurrency       1.1673 sec
-unbounded_spsc            llvm std.concurrency       2.2086 sec
-unbounded_mpsc            llvm std.concurrency       2.2002 sec
+unbounded_seq             llvm std.concurrency       1.1412 sec
+unbounded_spsc            llvm std.concurrency       1.1379 sec
+unbounded_mpsc            llvm std.concurrency       3.3258 sec
 ```
 
 ### Go

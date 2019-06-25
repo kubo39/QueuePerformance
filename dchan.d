@@ -1,16 +1,15 @@
 import core.thread : thread_joinAll;
-import std.compiler : vendor;
 import std.concurrency;
 import std.conv : to;
 import std.datetime.stopwatch;
 import std.stdio;
 
-immutable size_t MESSAGES = 5_000_000;
-immutable size_t THREADS = 4;
+enum MESSAGES = 5_000_000;
+enum THREADS = 4;
 
 void seq()
 {
-    foreach (i; 0 .. MESSAGES)
+    foreach (int i; 0 .. MESSAGES)
         thisTid.send(cast(int) i);
     foreach (_; 0 .. MESSAGES)
         receiveOnly!int;
@@ -44,11 +43,11 @@ void mpsc()
     thread_joinAll;
 }
 
-string getCompilerString(string v)
+string getCompilerString()
 {
-    if (v == "digitalMars")
+    version (DigitalMars)
         return "dmd";
-    else if (v == "llvm")
+    version (LDC)
         return "ldc";
     else assert(false);
 }
@@ -60,7 +59,7 @@ void run(string name, void function() f)
     auto elapsed = sw.peek();
     writefln("%-25s %15s %7s.%3s sec",
              name,
-             vendor.to!string.getCompilerString ~ " std.concurrency",
+             getCompilerString ~ " std.concurrency",
              elapsed.total!"seconds", elapsed.total!"msecs");
 }
 
