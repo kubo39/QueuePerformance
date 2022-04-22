@@ -9,7 +9,7 @@ enum THREADS = 4;
 
 void seq()
 {
-    foreach (int i; 0 .. MESSAGES)
+    foreach (i; 0 .. MESSAGES)
         thisTid.send(cast(int) i);
     foreach (_; 0 .. MESSAGES)
         receiveOnly!int;
