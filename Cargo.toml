@@ -3,8 +3,8 @@ name = "benchmark"
 version = "0.2.0"
 
 [dependencies]
-crossbeam = "0.7.1"
-crossbeam-channel = "0.3.8"
+crossbeam = "0.8.1"
+crossbeam-channel = "0.5.4"
 
 [[bin]]
 name = "crossbeam-channel"
