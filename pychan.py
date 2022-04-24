@@ -5,10 +5,10 @@ import time
 MESSAGES = 5000000
 THREADS = 4
 
-seq_queue = queue.Queue()
-spsc_queue = queue.Queue()
-mpsc_queue = queue.Queue()
-mpmc_queue = queue.Queue()
+seq_queue = queue.SimpleQueue()
+spsc_queue = queue.SimpleQueue()
+mpsc_queue = queue.SimpleQueue()
+mpmc_queue = queue.SimpleQueue()
 
 def seq():
     for i in range(0, MESSAGES):
