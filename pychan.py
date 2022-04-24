@@ -67,7 +67,7 @@ def run(name, f):
     now = time.perf_counter()
     f()
     elapsed = time.perf_counter() - now
-    print(name, "Python Queue", elapsed, "sec")
+    print(name, "Python SimpleQueue", elapsed, "sec")
 
 if "__main__" == __name__:
     run("unbounded_seq", seq)
