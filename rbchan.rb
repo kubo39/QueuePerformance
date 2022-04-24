@@ -1,5 +1,4 @@
 require 'thread'
-require 'thwait'
 
 MESSAGES = 5_000_000
 THREADS = 4
@@ -46,7 +45,7 @@ if __FILE__ == $0
     threads << Thread.start {
       MESSAGES.times { $mpsc_queue.pop }
     }
-    ThreadsWait.all_waits(*threads)
+    threads.each {|th| th.join }
     # $mpsc_queue.close
   end
 
@@ -66,7 +65,7 @@ if __FILE__ == $0
         }
       }
     }
-    ThreadsWait.all_waits(*threads)
+    threads.each {|th| th.join }
     # $mpsc_queue.close
   end
 
