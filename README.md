@@ -19,15 +19,17 @@ $ cat /proc/cpuinfo| grep processor| wc -l
 $ dmd --version| head -1
 DMD64 D Compiler v2.086.1
 $ ldc -version| head -1
-LDC - the LLVM D compiler (1.16.0):
+LDC - the LLVM D compiler (1.29.0):
 $ go version
 go version go1.10.3 linux/amd64
 $ nim --version 2>&1| head -1
-Nim Compiler Version 0.18.0 [Linux: amd64]
+Nim Compiler Version 1.6.4 [Linux: amd64]
 $ ruby -v
-ruby 2.5.1p57 (2018-03-29 revision 63029) [x86_64-linux]
+ruby 3.1.2p20 (2022-04-12 revision 4491bb740a) [x86_64-linux]
+$ python -V
+Python 3.10.4
 $ rustc --version
-rustc 1.35.0 (3c235d560 2019-05-20)
+rustc 1.60.0 (7737e0b5c 2022-04-04)
 ```
 
 ## Languages
@@ -48,9 +50,9 @@ unbounded_mpsc            digitalMars std.concurrency       5.5216 sec
 ```console
 $ ldc2 -O3 dchan.d
 $ ./dchan
-unbounded_seq             llvm std.concurrency       1.1412 sec
-unbounded_spsc            llvm std.concurrency       1.1379 sec
-unbounded_mpsc            llvm std.concurrency       3.3258 sec
+unbounded_seq             ldc std.concurrency       1.1444 sec
+unbounded_spsc            ldc std.concurrency       1.1317 sec
+unbounded_mpsc            ldc std.concurrency       3.3097 sec
 ```
 
 ### Go
@@ -85,42 +87,39 @@ Nimのthreadpoolはimport時にネイティブスレッドをCPUコア数分だ�
 $ nim c -d:release nimchan.nim
 (...)
 $ ./nimchan
-unbounded_seq             Nim channel       0.465 sec
-unbounded_spsc            Nim channel        1.17 sec
-unbounded_mpsc            Nim channel        1.31 sec
-unbounded_mpmc            Nim channel        2.35 sec
+)$ ./nimchan
+unbounded_seq             Nim channel     3.68e+08 sec
+unbounded_spsc            Nim channel     1.30e+09 sec
+unbounded_mpsc            Nim channel     1.31e+09 sec
+unbounded_mpmc            Nim channel     1.58e+09 sec
 ```
 
 ### Python
 
-** **NOTE** **
-
-PythonのQueue実装はPythonで書かれている。
-
 ```console
 $ python pychan.py
-unbounded_seq : 18.500499963760376 sec
-unbounded_mpsc : 27.514017581939697 sec
+unbounded_seq Python SimpleQueue 0.9366878719883971 sec
+unbounded_mpsc Python SimpleQueue 0.9848010159912519 sec
+unbounded_mpmc Python SimpleQueue 0.9402019499975722 sec
 ```
 
 ### Ruby
 
 ```console
 $ ruby rbchan.rb
-unbounded_seq Ruby Queue 0.63472069 sec
-unbounded_spsc Ruby Queue 0.580684254 sec
-unbounded_mpsc Ruby Queue 0.591327483 sec
-unbounded_mpmc Ruby Queue 0.223464353 sec
+unbounded_seq Ruby Queue 0.8689487840165384 sec
+unbounded_spsc Ruby Queue 0.8637597369961441 sec
+unbounded_mpsc Ruby Queue 0.8805460979929194 sec
+unbounded_mpmc Ruby Queue 0.8704172770085279 sec
 ```
 
 ### Rust
 
 ```console
-$ RUSTFLAGS="=C target-cpu=native" cargo run --release --bin crossbeam-channel
-    Finished release [optimized] target(s) in 0.0 secs
-     Running `target/release/crossbeam-channel`
-unbounded_mpmc            Rust channel      0.200 sec
-unbounded_mpsc            Rust channel      0.230 sec
-unbounded_seq             Rust channel      0.326 sec
-unbounded_spsc            Rust channel      0.192 sec
+$ cargo run --release --bin crossbeam-channel
+(...)
+unbounded_mpmc            Rust crossbeam-channel   0.217 sec
+unbounded_mpsc            Rust crossbeam-channel   0.203 sec
+unbounded_seq             Rust crossbeam-channel   0.326 sec
+unbounded_spsc            Rust crossbeam-channel   0.211 sec
 ```
