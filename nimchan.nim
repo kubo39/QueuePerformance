@@ -1,5 +1,5 @@
 import os
-import posix
+import std/monotimes
 import strformat
 import threadpool
 import times
@@ -70,16 +70,11 @@ proc mpmc =
   threadpool.sync()
   channels[3].close()
 
-proc monotonicTime(): float64 =
-  var ts: Timespec
-  discard clock_gettime(CLOCK_MONOTONIC, ts)
-  result = ts.tv_sec.float64 * 1e9'f64 + ts.tv_nsec.float64
-
 proc run(name: string, f: proc()) =
-  let time = monotonicTime()
+  let time = getMonoTime()
   f()
-  let elapsed = monotonicTime() - time
-  echo &"""{name:<25} {"Nim channel":<15} {elapsed:7.3} sec"""
+  let elapsed = getMonoTime() - time
+  echo &"""{name:<25} {"Nim channel":<15} {elapsed.inSeconds:7}.{elapsed.inMilliseconds:3} sec"""
 
 when isMainModule:
   run("unbounded_seq", seque)
