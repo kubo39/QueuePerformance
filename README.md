@@ -87,11 +87,11 @@ Nimのthreadpoolはimport時にネイティブスレッドをCPUコア数分だ�
 $ nim c -d:release nimchan.nim
 (...)
 $ ./nimchan
-)$ ./nimchan
-unbounded_seq             Nim channel     3.68e+08 sec
-unbounded_spsc            Nim channel     1.30e+09 sec
-unbounded_mpsc            Nim channel     1.31e+09 sec
-unbounded_mpmc            Nim channel     1.58e+09 sec
+$ ./nimchan
+unbounded_seq             Nim channel           0.354 sec
+unbounded_spsc            Nim channel           1.1202 sec
+unbounded_mpsc            Nim channel           1.1308 sec
+unbounded_mpmc            Nim channel           1.1598 sec
 ```
 
 ### Python
